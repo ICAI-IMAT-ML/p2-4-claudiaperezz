@@ -64,12 +64,18 @@ class LinearRegressor:
         Returns:
             None: Modifies the model's coefficients and intercept in-place.
         """
-        X_nueva = np.c_[np.ones(X.shape[0]), X]
-        matriz = np.linalg.inv(X_nueva.T @ X_nueva) @ X_nueva.T @ y
+        
+        X = np.asarray(X)
+        if np.ndim(X) == 1:
+            X=X.reshape(-1,1)
+        
+        X_x=X.T@X
+        X_y=X.T@y
+        matriz = np.linalg.inv(X_x)@X_y
 
-        self.intercept = matriz[0]
-        self.coefficients = matriz[1:]
-
+        self.intercept=matriz[0]
+        self.coefficients=matriz[1:]
+        
     def fit_gradient_descent(self, X, y, learning_rate=0.01, iterations=1000):
         """
         Fit the model using either normal equation or gradient descent.
@@ -123,15 +129,17 @@ class LinearRegressor:
 
         # Paste your code from last week
 
+        X = np.asarray(X)
+
         if self.coefficients is None or self.intercept is None:
             raise ValueError("Model is not yet fitted")
 
         if np.ndim(X) == 1:
             # TODO: Predict when X is only one variable
-            predictions = self.intercept + self.coefficients*X
+            predictions = self.intercept + self.coefficients * X
         else:
             # TODO: Predict when X is more than one variable
-            predictions = self.intercept + np.dot(X,self.coefficients)
+            predictions = self.intercept + X @ self.coefficients
         return predictions
 
 
